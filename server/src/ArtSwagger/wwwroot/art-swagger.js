@@ -52,6 +52,7 @@
         cacheElements();
         initTheme();
         initEventListeners();
+        initHashListener();
         loadGroups();
         loadGlobalParams();
     }
@@ -261,7 +262,11 @@
             parseSpec(spec);
             renderSidebar();
             renderWelcomeStats();
-            showWelcome();
+
+            // Check URL hash and open corresponding operation
+            if (!restoreFromHash()) {
+                showWelcome();
+            }
         } catch (error) {
             console.error('Failed to load spec:', error);
             elements.apiNav.innerHTML = `
@@ -554,6 +559,7 @@
                 elements.welcomePanel.style.display = '';
                 elements.tabPanels.classList.remove('active');
                 clearNavActiveState();
+                clearUrlHash();
             }
         }
 
@@ -566,6 +572,9 @@
 
         state.activeTabId = tabId;
         state.currentOperation = tab.operation;
+
+        // Update URL hash (without triggering hashchange handler)
+        updateUrlHash(tab.method, tab.path);
 
         // Update tab button states
         elements.tabsBar.querySelectorAll('.art-tab-item').forEach(item => {
@@ -620,6 +629,49 @@
     function clearNavActiveState() {
         elements.apiNav.querySelectorAll('.art-nav-item').forEach(item => {
             item.classList.remove('active');
+        });
+    }
+
+    // ============================================
+    // URL Hash Routing
+    // ============================================
+    function updateUrlHash(method, path) {
+        const hash = `#${method.toUpperCase()}${path}`;
+        if (window.location.hash !== hash) {
+            history.replaceState(null, '', hash);
+        }
+    }
+
+    function clearUrlHash() {
+        if (window.location.hash) {
+            history.replaceState(null, '', window.location.pathname);
+        }
+    }
+
+    function restoreFromHash() {
+        const hash = window.location.hash;
+        if (!hash || hash.length < 2) return false;
+
+        // Parse hash: #GET/path or #POST/path
+        const content = hash.substring(1);  // Remove #
+        const methodMatch = content.match(/^(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD)/i);
+        if (!methodMatch) return false;
+
+        const method = methodMatch[1].toLowerCase();
+        const path = content.substring(methodMatch[1].length);
+
+        // Find operation
+        const operation = state.operations.find(op => op.path === path && op.method === method);
+        if (operation) {
+            openTab(path, method);
+            return true;
+        }
+        return false;
+    }
+
+    function initHashListener() {
+        window.addEventListener('hashchange', () => {
+            restoreFromHash();
         });
     }
 
