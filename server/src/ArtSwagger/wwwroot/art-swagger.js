@@ -857,6 +857,18 @@
 
             <!-- Debug Tab Content -->
             <div class="art-main-tab-content" id="tabDebug">
+                <!-- Execute Actions Bar (Top) -->
+                <div class="art-action-bar art-action-bar-top">
+                    <button class="art-btn art-btn-primary art-btn-execute" onclick="ArtSwagger.executeRequest()">
+                        <svg class="art-icon" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
+                        发送请求
+                    </button>
+                    <button class="art-btn art-btn-secondary" onclick="ArtSwagger.clearInputs()">
+                        <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="currentColor"/></svg>
+                        重置
+                    </button>
+                </div>
+
                 <!-- Global Params (if any) -->
                 ${renderGlobalParamsForDebug()}
 
@@ -924,18 +936,6 @@
                     </div>
                 </div>
                 ` : ''}
-
-                <!-- Execute Actions -->
-                <div class="art-action-bar">
-                    <button class="art-btn art-btn-primary art-btn-execute" onclick="ArtSwagger.executeRequest()">
-                        <svg class="art-icon" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
-                        发送请求
-                    </button>
-                    <button class="art-btn art-btn-secondary" onclick="ArtSwagger.clearInputs()">
-                        <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="currentColor"/></svg>
-                        重置
-                    </button>
-                </div>
 
                 <!-- Response Section -->
                 <div class="art-card" id="responseCard" style="display: none;">

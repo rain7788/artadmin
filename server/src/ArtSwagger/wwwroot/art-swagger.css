@@ -1575,6 +1575,12 @@ a:hover {
     margin-bottom: 16px;
 }
 
+.art-action-bar-top {
+    padding: 0 0 16px 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--art-border-color);
+}
+
 .art-btn-execute {
     padding: 12px 28px;
     font-size: 14px;
@@ -1631,6 +1637,7 @@ a:hover {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 13px;
     line-height: 1.6;
+    min-height: 320px;
     background: var(--art-bg-input);
     color: var(--art-text-primary);
     border: 1px solid var(--art-border-color);
