@@ -53,7 +53,6 @@
         initTheme();
         initEventListeners();
         loadGroups();
-        restoreAuth();
         loadGlobalParams();
     }
 
@@ -64,7 +63,6 @@
         elements.currentGroupName = document.getElementById('currentGroupName');
         elements.searchBtn = document.getElementById('searchBtn');
         elements.themeToggle = document.getElementById('themeToggle');
-        elements.authBtn = document.getElementById('authBtn');
         elements.sidebar = document.getElementById('sidebar');
         elements.sidebarSearch = document.getElementById('sidebarSearch');
         elements.apiNav = document.getElementById('apiNav');
@@ -76,8 +74,6 @@
         elements.searchModal = document.getElementById('searchModal');
         elements.globalSearchInput = document.getElementById('globalSearchInput');
         elements.searchResults = document.getElementById('searchResults');
-        elements.authModal = document.getElementById('authModal');
-        elements.bearerToken = document.getElementById('bearerToken');
         elements.toastContainer = document.getElementById('toastContainer');
     }
 
@@ -130,9 +126,6 @@
 
         // Search
         elements.searchBtn.addEventListener('click', () => openSearch());
-
-        // Auth
-        elements.authBtn.addEventListener('click', () => openAuth());
 
         // Global Params
         document.getElementById('globalParamsBtn')?.addEventListener('click', () => openGlobalParams());
@@ -241,6 +234,9 @@
     async function selectGroup(url, name) {
         state.currentGroup = { url, name };
         elements.currentGroupName.textContent = name;
+
+        // Switch global params for this group
+        switchGroupParams();
 
         // Update active state in dropdown
         elements.groupDropdown.querySelectorAll('.art-group-item').forEach(item => {
@@ -1485,43 +1481,28 @@
     }
 
     // ============================================
-    // Auth
+    // Global Params (per group)
     // ============================================
-    function openAuth() {
-        elements.authModal.classList.add('open');
-        elements.bearerToken.value = state.bearerToken;
-        elements.bearerToken.focus();
-    }
-
-    function closeAuth() {
-        elements.authModal.classList.remove('open');
-    }
-
-    function applyAuth() {
-        state.bearerToken = elements.bearerToken.value.trim();
-        localStorage.setItem('art-swagger-token', state.bearerToken);
-        closeAuth();
-        showToast(state.bearerToken ? '认证信息已保存' : '认证信息已清除', 'success');
-    }
-
-    function restoreAuth() {
-        state.bearerToken = localStorage.getItem('art-swagger-token') || '';
-    }
-
-    // ============================================
-    // Global Params
-    // ============================================
-    let globalParams = [];
+    let allGroupParams = {};  // { groupName: [...params] }
+    let globalParams = [];    // current group's params
     let editingParamIndex = -1;
 
     function loadGlobalParams() {
-        const saved = localStorage.getItem('art-swagger-global-params');
-        globalParams = saved ? JSON.parse(saved) : [];
+        const saved = localStorage.getItem('art-swagger-global-params-v2');
+        allGroupParams = saved ? JSON.parse(saved) : {};
+        switchGroupParams();
+    }
+
+    function switchGroupParams() {
+        const groupKey = state.currentGroup?.name || 'default';
+        globalParams = allGroupParams[groupKey] || [];
         updateGlobalParamsCount();
     }
 
     function saveGlobalParams() {
-        localStorage.setItem('art-swagger-global-params', JSON.stringify(globalParams));
+        const groupKey = state.currentGroup?.name || 'default';
+        allGroupParams[groupKey] = globalParams;
+        localStorage.setItem('art-swagger-global-params-v2', JSON.stringify(allGroupParams));
         updateGlobalParamsCount();
     }
 
@@ -1838,11 +1819,6 @@
         // Search
         openSearch,
         closeSearch,
-
-        // Auth
-        openAuth,
-        closeAuth,
-        applyAuth,
 
         // Global Params
         openGlobalParams,

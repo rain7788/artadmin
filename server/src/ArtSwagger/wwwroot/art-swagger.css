@@ -316,8 +316,7 @@ a:hover {
 }
 
 .art-search-btn,
-.art-theme-btn,
-.art-auth-btn {
+.art-theme-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -340,8 +339,7 @@ a:hover {
 }
 
 .art-search-btn:hover,
-.art-theme-btn:hover,
-.art-auth-btn:hover {
+.art-theme-btn:hover {
     background: var(--art-bg-hover);
     color: var(--art-primary);
 }
@@ -1785,24 +1783,7 @@ a:hover {
     color: var(--art-text-secondary);
 }
 
-/* Auth Modal */
-.art-auth-dialog {
-    position: relative;
-    width: 520px;
-    max-width: 90vw;
-    background: var(--art-bg-card);
-    border: 1px solid var(--art-border-color);
-    border-radius: var(--art-border-radius-lg);
-    box-shadow: var(--art-shadow-lg);
-    overflow: hidden;
-    transform: translateY(-20px) scale(0.95);
-    transition: var(--art-transition);
-}
-
-.art-modal.open .art-auth-dialog {
-    transform: translateY(0) scale(1);
-}
-
+/* Dialog Common Styles */
 .art-dialog-header {
     display: flex;
     align-items: center;
