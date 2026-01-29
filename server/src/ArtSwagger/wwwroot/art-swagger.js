@@ -194,7 +194,8 @@
         // Escape to close modals
         if (e.key === 'Escape') {
             closeSearch();
-            closeAuth();
+            closeGlobalParams();
+            closeParamForm();
         }
     }
 
@@ -1134,40 +1135,6 @@
                 // Update content
                 container.querySelectorAll('.art-tab-content').forEach(content => {
                     content.classList.toggle('active', content.id === `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
-                });
-            });
-        });
-    }
-
-    // Keep legacy functions for backwards compatibility
-    function initMainTabs() {
-        const tabs = document.querySelectorAll('#mainTabs .art-main-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-
-                // Update tab buttons
-                tabs.forEach(t => t.classList.toggle('active', t === tab));
-
-                // Update tab content
-                document.getElementById('tabDocument').classList.toggle('active', tabName === 'document');
-                document.getElementById('tabDebug').classList.toggle('active', tabName === 'debug');
-            });
-        });
-    }
-
-    function initResponseTabs() {
-        const tabs = document.querySelectorAll('#responseTabs .art-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-
-                // Update tab buttons
-                tabs.forEach(t => t.classList.toggle('active', t === tab));
-
-                // Update tab content
-                document.querySelectorAll('#responseCard .art-tab-content').forEach(content => {
-                    content.classList.toggle('active', content.id === `tab${capitalize(tabName)}`);
                 });
             });
         });
