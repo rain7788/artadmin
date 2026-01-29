@@ -433,7 +433,7 @@ a:hover {
     padding: 10px 14px 10px 36px;
     background: var(--art-bg-input);
     border: 1px solid var(--art-border-light);
-    border-radius: 20px;
+    border-radius: 8px;
     color: var(--art-text-primary);
     font-size: 13px;
     outline: none;
@@ -805,9 +805,9 @@ a:hover {
 
 .art-api-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
-    padding: 14px 20px;
+    padding: 12px 20px;
     background: var(--art-bg-card);
     border: 1px solid var(--art-border-color);
     border-radius: var(--art-border-radius-lg);
@@ -815,13 +815,12 @@ a:hover {
 }
 
 .art-api-method {
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     flex-shrink: 0;
-    margin-top: 2px;
 }
 
 .art-api-method.get { background: var(--art-method-get); color: white; }
@@ -834,18 +833,19 @@ a:hover {
     flex: 1;
     min-width: 0;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 8px 12px;
+    gap: 10px;
 }
 
 .art-api-path-row {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .art-api-path {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--art-text-primary);
     word-break: break-all;
@@ -854,8 +854,9 @@ a:hover {
 .art-api-summary {
     font-size: 13px;
     color: var(--art-text-secondary);
-    padding-left: 12px;
+    padding-left: 10px;
     border-left: 1px solid var(--art-border-color);
+    white-space: nowrap;
 }
 
 .art-api-tags {
@@ -1035,12 +1036,15 @@ a:hover {
 }
 
 .art-btn-primary {
-    background: var(--art-primary);
-    color: white;
+    background: var(--art-bg-card);
+    color: var(--art-text-primary);
+    border: 1px solid var(--art-border-color);
 }
 
 .art-btn-primary:hover:not(:disabled) {
-    background: var(--art-primary-dark);
+    background: var(--art-bg-hover);
+    border-color: var(--art-gray-400);
+    color: var(--art-text-primary);
 }
 
 .art-btn-secondary {
@@ -1582,13 +1586,15 @@ a:hover {
 }
 
 .art-btn-execute {
-    padding: 12px 28px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .art-btn-execute .art-icon {
-    margin-right: 6px;
+    margin-right: 4px;
+    width: 14px;
+    height: 14px;
 }
 
 /* Card Badge */
@@ -1637,11 +1643,13 @@ a:hover {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 13px;
     line-height: 1.6;
-    min-height: 320px;
+    min-height: 160px;
+    max-height: 240px;
     background: var(--art-bg-input);
     color: var(--art-text-primary);
     border: 1px solid var(--art-border-color);
     border-radius: var(--art-border-radius);
+    resize: vertical;
 }
 
 .art-code-editor:focus {
