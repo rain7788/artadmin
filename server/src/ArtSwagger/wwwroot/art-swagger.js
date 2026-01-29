@@ -26,7 +26,8 @@
         // Tab management
         openTabs: [],       // Array of { id, path, method, title, operation }
         activeTabId: null,
-        tabsByGroup: {}     // { groupName: { tabs: [], activeTabId: null } }
+        tabsByGroup: {},    // { groupName: { tabs: [], activeTabId: null } }
+        globalParamsExpanded: false  // 全局参数展开状态
     };
 
     // ============================================
@@ -551,6 +552,7 @@
         state.activeTabId = null; // 不清空 openTabs，保留已打开的标签
         renderTabs();
         updateHeaderTitle(null); // 更新标题为默认
+        clearUrlHash(); // 清空 URL hash
 
         // Remove active state from nav items
         elements.apiNav.querySelectorAll('.art-nav-item').forEach(item => {
@@ -754,12 +756,19 @@
 
     function restoreFromHash() {
         const hash = window.location.hash;
-        if (!hash || hash.length < 2) return false;
+        if (!hash || hash.length < 2) {
+            // 空 hash 显示概览
+            showWelcome();
+            return true;
+        }
 
         // Parse hash: #GET/path or #POST/path
         const content = hash.substring(1);  // Remove #
         const methodMatch = content.match(/^(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD)/i);
-        if (!methodMatch) return false;
+        if (!methodMatch) {
+            showWelcome();
+            return false;
+        }
 
         const method = methodMatch[1].toLowerCase();
         const path = content.substring(methodMatch[1].length);
@@ -770,6 +779,7 @@
             openTab(path, method);
             return true;
         }
+        showWelcome();
         return false;
     }
 
@@ -1563,8 +1573,6 @@
         if (responseCard) {
             responseCard.style.display = 'none';
         }
-
-        showToast('已重置为默认值', 'info');
     }
 
     function formatRequestBody() {
@@ -1801,9 +1809,10 @@
         if (globalParams.length === 0) return '';
 
         const checkboxClass = globalParamsEnabled ? 'art-global-params-checkbox checked' : 'art-global-params-checkbox';
+        const expandedClass = state.globalParamsExpanded ? 'expanded' : '';
 
         return `
-            <div class="art-global-params-section" id="globalParamsSection">
+            <div class="art-global-params-section ${expandedClass}" id="globalParamsSection">
                 <div class="art-global-params-header" onclick="window.ArtSwagger.toggleGlobalParamsSection(event)">
                     <svg class="art-icon art-global-params-toggle" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
                     <div class="${checkboxClass}" onclick="window.ArtSwagger.toggleGlobalParamsEnabled(event)">
@@ -1849,6 +1858,7 @@
         const section = document.getElementById('globalParamsSection');
         if (section) {
             section.classList.toggle('expanded');
+            state.globalParamsExpanded = section.classList.contains('expanded');
         }
     }
 

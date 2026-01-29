@@ -446,17 +446,21 @@ a:hover {
     font-weight: 600;
     font-size: 15px;
     color: var(--art-text-primary);
+    min-width: 0;
+    flex: 1;
 }
 
 .art-sidebar-header .art-logo-icon {
     width: 28px;
     height: 28px;
+    flex-shrink: 0;
 }
 
 .art-sidebar-header .art-logo-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 180px;
 }
 
 .art-sidebar-search {
@@ -1105,8 +1109,7 @@ a:hover {
 
 .art-btn-secondary:hover:not(:disabled) {
     background: var(--art-bg-hover);
-    border-color: var(--art-primary);
-    color: var(--art-primary);
+    color: var(--art-text-primary);
 }
 
 .art-btn-success {
@@ -2186,6 +2189,17 @@ a:hover {
 
 .art-global-params-table .art-params-table {
     margin-bottom: 0;
+    border: none;
+}
+
+.art-global-params-table .art-params-table thead th {
+    border-top: none;
+    border-bottom: none;
+    background: var(--art-bg-elevated);
+}
+
+.art-global-params-table .art-params-table tbody tr:first-child td {
+    border-top: 1px solid var(--art-border-light);
 }
 
 .art-global-input {
@@ -2223,11 +2237,11 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 20px;
+    padding: 10px 16px;
     background: var(--art-bg-card);
     border: 1px solid var(--art-border-color);
-    border-radius: 20px;
-    box-shadow: var(--art-shadow-lg);
+    border-radius: 8px;
+    box-shadow: var(--art-shadow-md);
     animation: slideDown 0.3s ease;
 }
 
