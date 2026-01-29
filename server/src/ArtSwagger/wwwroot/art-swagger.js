@@ -473,9 +473,9 @@
         elements.welcomePanel.style.display = '';
         elements.tabPanels.classList.remove('active');
         state.currentOperation = null;
-        state.openTabs = [];
-        state.activeTabId = null;
-        renderTabs(); // 保留概览标签
+        state.activeTabId = null; // 不清空 openTabs，保留已打开的标签
+        renderTabs();
+        updateHeaderTitle(null); // 更新标题为默认
 
         // Remove active state from nav items
         elements.apiNav.querySelectorAll('.art-nav-item').forEach(item => {
@@ -604,12 +604,27 @@
 
         // Update nav
         updateNavActiveState(tab.path, tab.method);
+
+        // Update header title
+        updateHeaderTitle(tab.operation);
+    }
+
+    function updateHeaderTitle(operation) {
+        const titleEl = document.querySelector('.art-header-title');
+        if (titleEl) {
+            if (operation) {
+                const methodClass = operation.method.toLowerCase();
+                titleEl.innerHTML = `<span class="art-header-method ${methodClass}">${operation.method.toUpperCase()}</span> ${escapeHtml(operation.summary || operation.path)}`;
+            } else {
+                titleEl.textContent = '接口概览';
+            }
+        }
     }
 
     function renderTabs() {
-        // 固定的概览标签
+        // 固定的概览标签 - 始终显示
         const homeTab = `
-            <div class="art-tab-item fixed ${!state.activeTabId ? 'active' : ''}" 
+            <div class="art-tab-item home ${!state.activeTabId ? 'active' : ''}" 
                  data-tab-id="home" 
                  onclick="ArtSwagger.showWelcome()">
                 <svg viewBox="0 0 24 24" width="14" height="14" style="flex-shrink:0"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
