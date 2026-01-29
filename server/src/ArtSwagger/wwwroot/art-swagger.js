@@ -25,7 +25,8 @@
         selectedSearchIndex: -1,
         // Tab management
         openTabs: [],       // Array of { id, path, method, title, operation }
-        activeTabId: null
+        activeTabId: null,
+        tabsByGroup: {}     // { groupName: { tabs: [], activeTabId: null } }
     };
 
     // ============================================
@@ -234,8 +235,27 @@
     }
 
     async function selectGroup(url, name) {
+        // Save current group's tabs before switching
+        if (state.currentGroup) {
+            const oldGroupKey = state.currentGroup.name;
+            state.tabsByGroup[oldGroupKey] = {
+                tabs: [...state.openTabs],
+                activeTabId: state.activeTabId
+            };
+        }
+
         state.currentGroup = { url, name };
         elements.currentGroupName.textContent = name;
+
+        // Restore tabs for new group (or start fresh)
+        const savedState = state.tabsByGroup[name];
+        if (savedState) {
+            state.openTabs = [...savedState.tabs];
+            state.activeTabId = savedState.activeTabId;
+        } else {
+            state.openTabs = [];
+            state.activeTabId = null;
+        }
 
         // Switch global params for this group
         switchGroupParams();
@@ -264,9 +284,32 @@
             renderSidebar();
             renderWelcomeStats();
 
-            // Check URL hash and open corresponding operation
+            // Check URL hash first, then try to restore saved tab state
             if (!restoreFromHash()) {
-                showWelcome();
+                // Try to restore saved tab state for this group
+                if (state.openTabs.length > 0 && state.activeTabId) {
+                    // Re-link operations to tabs (operations were re-parsed)
+                    state.openTabs = state.openTabs.map(tab => {
+                        const op = state.operations.find(o => o.path === tab.path && o.method === tab.method);
+                        return op ? { ...tab, operation: op } : null;
+                    }).filter(Boolean);
+
+                    if (state.openTabs.length > 0) {
+                        const activeTab = state.openTabs.find(t => t.id === state.activeTabId);
+                        if (activeTab) {
+                            renderTabs();
+                            activateTab(state.activeTabId);
+                        } else {
+                            state.activeTabId = null;
+                            showWelcome();
+                        }
+                    } else {
+                        state.activeTabId = null;
+                        showWelcome();
+                    }
+                } else {
+                    showWelcome();
+                }
             }
         } catch (error) {
             console.error('Failed to load spec:', error);
@@ -501,6 +544,7 @@
         // Check if tab already exists
         const existingTab = state.openTabs.find(t => t.id === tabId);
         if (existingTab) {
+            renderTabs(); // Ensure tabs are rendered (important for group switching)
             activateTab(tabId);
             return;
         }
