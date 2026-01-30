@@ -11,7 +11,7 @@ public class ServiceAttribute : Attribute
 {
     public ServiceLifetime LifeTime { get; }
 
-    public ServiceAttribute(ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+    public ServiceAttribute(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
         LifeTime = serviceLifetime;
     }

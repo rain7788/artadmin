@@ -1,9 +1,8 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using RedisClient = FreeRedis.RedisClient;
 using Microsoft.Extensions.DependencyInjection;
 using SeaCode.Core.Shared;
+using SeaCode.Domain.Constants;
 using SeaCode.Domain.Entities;
 using SeaCode.Domain.Enums;
 using SeaCode.Domain.Exceptions;
@@ -48,7 +47,7 @@ public class SysUserService
         }
 
         // 检查登录失败次数
-        var failKey = $"login:fail:{username}:{DateTime.Now:yyyyMMdd}";
+        var failKey = CacheKeys.LoginFailCount($"{username}:{DateTime.Now:yyyyMMdd}");
         var failCountStr = _cache.Get<string>(failKey);
         var failCount = string.IsNullOrEmpty(failCountStr) ? 0 : int.Parse(failCountStr);
 
@@ -73,8 +72,7 @@ public class SysUserService
         }
 
         // 验证密码（密码使用 SHA256 + Base64 加密存储）
-        var passwordHash = ComputePasswordHash(request.Password);
-        if (user.Password != passwordHash)
+        if (!PasswordHelper.Verify(request.Password, user.Password))
         {
             // 记录失败次数
             failCount++;
@@ -163,11 +161,10 @@ public class SysUserService
             throw new NotFoundException("用户不存在");
         }
 
-        var oldPasswordHash = ComputePasswordHash(request.OldPassword);
-        if (user.Password != oldPasswordHash)
+        if (!PasswordHelper.Verify(request.OldPassword, user.Password))
             throw new BadRequestException("旧密码错误");
 
-        user.Password = ComputePasswordHash(request.NewPassword);
+        user.Password = PasswordHelper.ComputeHash(request.NewPassword);
         await _context.SaveChangesAsync();
     }
 
@@ -284,7 +281,7 @@ public class SysUserService
         // 更新字段
         user.Username = request.Username ?? user.Username;
         if (!string.IsNullOrWhiteSpace(request.Password))
-            user.Password = ComputePasswordHash(request.Password);
+            user.Password = PasswordHelper.ComputeHash(request.Password);
         user.RealName = request.RealName ?? user.RealName;
         user.Phone = request.Phone ?? user.Phone;
         user.Avatar = request.Avatar ?? user.Avatar;
@@ -337,15 +334,6 @@ public class SysUserService
         await _context.SaveChangesAsync();
 
         return true;
-    }
-
-    /// <summary>
-    /// 计算密码哈希（SHA256 + Base64）
-    /// </summary>
-    private static string ComputePasswordHash(string password)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
     }
 }
 

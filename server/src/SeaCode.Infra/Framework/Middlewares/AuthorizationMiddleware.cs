@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RedisClient = FreeRedis.RedisClient;
 using Microsoft.Extensions.Hosting;
+using SeaCode.Domain.Constants;
 using SeaCode.Domain.Enums;
 using SeaCode.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -174,7 +175,7 @@ public class AuthorizationMiddleware
         RedisClient cache)
     {
         var tokenHash = ComputeMd5(token);
-        var cacheKey = $"ut:{tokenHash}";
+        var cacheKey = CacheKeys.UserToken(tokenHash);
         var cacheExpire = _hostEnvironment.IsProduction()
             ? TimeSpan.FromMinutes(10)
             : TimeSpan.FromMinutes(1);
