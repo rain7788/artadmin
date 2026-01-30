@@ -31,8 +31,9 @@
                     <div v-for="icon in filteredIcons" :key="icon" class="icon-item"
                         :class="{ active: modelValue === `ri:${icon}` }" :title="icon" @click="handleSelect(icon)">
                         <ArtSvgIcon :icon="`ri:${icon}`" class="icon-svg" />
-                        <span class="icon-name">{{ icon }}</span>
                     </div>
+                    <!-- 占位元素，补齐最后一行 -->
+                    <div v-for="n in placeholderCount" :key="`placeholder-${n}`" class="icon-placeholder"></div>
                 </div>
                 <ElEmpty v-else description="未找到匹配的图标" :image-size="60" />
             </ElScrollbar>
@@ -78,18 +79,34 @@ const allIcons = computed(() => {
     return Object.keys(riIcons.icons || {})
 })
 
+// 线条风格图标（更清爽）
+const lineIcons = computed(() => {
+    return allIcons.value.filter((name) => name.endsWith('-line'))
+})
+
 // 图标总数
 const totalCount = computed(() => allIcons.value.length)
+
+// 每行显示数量
+const columnsPerRow = 10
 
 // 过滤后的图标列表
 const filteredIcons = computed(() => {
     const keyword = searchText.value.toLowerCase().trim()
     if (!keyword) {
-        // 没有搜索时，显示常用图标（前300个）
-        return allIcons.value.slice(0, 300)
+        // 没有搜索时，显示线条风格图标（前300个）
+        return lineIcons.value.slice(0, 300)
     }
-    // 搜索时显示所有匹配项
-    return allIcons.value.filter((name) => name.toLowerCase().includes(keyword))
+    // 搜索时优先显示线条风格，再显示填充风格
+    const matchedLine = lineIcons.value.filter((name) => name.toLowerCase().includes(keyword))
+    const matchedFill = allIcons.value.filter((name) => name.endsWith('-fill') && name.toLowerCase().includes(keyword))
+    return [...matchedLine, ...matchedFill]
+})
+
+// 计算最后一行需要的占位元素数量
+const placeholderCount = computed(() => {
+    const remainder = filteredIcons.value.length % columnsPerRow
+    return remainder === 0 ? 0 : columnsPerRow - remainder
 })
 
 // 显示值
@@ -148,51 +165,49 @@ const handleDialogClosed = (): void => {
 
 .icon-grid {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 2px;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0;
+    border-left: 1px solid var(--el-border-color);
+    border-top: 1px solid var(--el-border-color);
+    width: 100%;
 }
 
 .icon-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px 2px 4px;
-    border-radius: 6px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.15s;
     color: var(--el-text-color-primary);
-    border: 1px solid transparent;
-    overflow: hidden;
+    border-right: 1px solid var(--el-border-color);
+    border-bottom: 1px solid var(--el-border-color);
+    aspect-ratio: 1;
+    background-color: transparent;
 
     &:hover {
-        background-color: var(--el-fill-color-light);
+        background-color: var(--el-color-primary-light-9);
         color: var(--el-color-primary);
-        border-color: var(--el-color-primary-light-7);
+        z-index: 1;
+        position: relative;
     }
 
     &.active {
-        background-color: var(--el-color-primary-light-9);
+        background-color: var(--el-color-primary-light-8);
         color: var(--el-color-primary);
-        border-color: var(--el-color-primary);
+        z-index: 2;
+        position: relative;
     }
 
     .icon-svg {
-        font-size: 22px;
+        font-size: 24px;
         flex-shrink: 0;
     }
+}
 
-    .icon-name {
-        margin-top: 4px;
-        font-size: 10px;
-        color: var(--el-text-color-secondary);
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        text-align: center;
-        line-height: 1.2;
-        padding: 0 2px;
-    }
+.icon-placeholder {
+    border-right: 1px solid var(--el-border-color);
+    border-bottom: 1px solid var(--el-border-color);
+    aspect-ratio: 1;
 }
 </style>
