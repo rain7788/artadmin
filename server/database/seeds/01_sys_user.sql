@@ -1,4 +1,4 @@
--- SeaCode 初始化数据
+-- Art Admin 初始化数据
 -- 默认管理员账号：admin / 123456
 -- 注意：所有 ID 现在使用 BIGINT 类型（雪花ID格式）
 

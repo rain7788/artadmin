@@ -1,4 +1,4 @@
--- SeaCode 数据库表结构定义
+-- Art Admin 数据库表结构定义
 -- 包含：Token、系统用户等核心表
 -- 主键使用 BIGINT 类型存储雪花ID
 

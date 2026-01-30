@@ -1,5 +1,5 @@
 # ============================================
-# SeaCode API - .NET 10 多阶段构建
+# Art API - .NET 10 多阶段构建
 # ============================================
 
 # Stage 1: 构建阶段
@@ -7,11 +7,11 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
 # 复制 sln 和 csproj 文件，利用 Docker 缓存层
-COPY SeaCode.sln .
-COPY SeaCode.Api/SeaCode.Api.csproj SeaCode.Api/
-COPY SeaCode.Core/SeaCode.Core.csproj SeaCode.Core/
-COPY SeaCode.Domain/SeaCode.Domain.csproj SeaCode.Domain/
-COPY SeaCode.Infra/SeaCode.Infra.csproj SeaCode.Infra/
+COPY Art.sln .
+COPY Art.Api/Art.Api.csproj Art.Api/
+COPY Art.Core/Art.Core.csproj Art.Core/
+COPY Art.Domain/Art.Domain.csproj Art.Domain/
+COPY Art.Infra/Art.Infra.csproj Art.Infra/
 
 # 还原依赖（独立层，利用缓存）
 RUN dotnet restore
@@ -20,7 +20,7 @@ RUN dotnet restore
 COPY . .
 
 # 发布 Release 版本
-RUN dotnet publish SeaCode.Api/SeaCode.Api.csproj \
+RUN dotnet publish Art.Api/Art.Api.csproj \
     -c Release \
     -o /app/publish \
     /p:PublishTrimmed=false \
@@ -56,4 +56,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:80/health || exit 1
 
 # 启动应用
-ENTRYPOINT ["dotnet", "SeaCode.Api.dll"]
+ENTRYPOINT ["dotnet", "Art.Api.dll"]

@@ -1,4 +1,4 @@
-# SeaCode AI 编码指南
+# Art Admin AI 编码指南
 
 ## ⛔ 禁止事项 (防止幻觉)
 
@@ -25,22 +25,22 @@
 
 ```
 server/src/
-├── SeaCode.Api/
+├── Art.Api/
 │   ├── Program.cs                    # 启动配置、中间件注册
 │   ├── Routes/Admin/                 # 后台管理路由
-│   ├── Routes/Game/                  # C端游戏路由
+│   ├── Routes/App/                   # 客户端应用路由
 │   └── Hosting/TaskConfiguration.cs  # 后台任务注册
-├── SeaCode.Core/
+├── Art.Core/
 │   ├── Services/Admin/               # 后台业务服务
-│   ├── Services/Game/                # 游戏业务服务
+│   ├── Services/App/                 # 应用端业务服务
 │   ├── Workers/                      # 定时任务
 │   └── Shared/                       # 复用业务逻辑
-├── SeaCode.Domain/
+├── Art.Domain/
 │   ├── Entities/                     # 数据库实体 (对应表)
 │   ├── Enums/                        # 枚举定义
 │   └── Exceptions/                   # 自定义异常
-├── SeaCode.Infra/
-│   ├── Data/GameDbContext.cs         # EF DbContext
+├── Art.Infra/
+│   ├── Data/ArtDbContext.cs          # EF DbContext
 │   ├── Framework/RequestContext.cs   # 当前用户上下文
 │   └── Common/                       # 工具类
 
@@ -77,7 +77,7 @@ Api → Core → Domain
 | 目录                  | 职责         | 可否注入 RequestContext |
 | --------------------- | ------------ | ----------------------- |
 | `Core/Services/Admin` | 后台管理业务 | ✅ 用 `_user.Id`        |
-| `Core/Services/Game`  | C端游戏业务  | ✅ 用 `_user.Id`        |
+| `Core/Services/App`   | 客户端业务   | ✅ 用 `_user.Id`        |
 | `Core/Workers`        | 定时任务     | ❌ 无用户上下文         |
 | `Core/Shared`         | 复用业务逻辑 | ❌ 通过参数传入         |
 | `Infra/Common`        | 纯工具类     | ❌ 无业务依赖           |
@@ -95,11 +95,11 @@ public class SysUserService { }
 
 实现接口自动应用鉴权：
 
-| 接口                | 路径前缀    | 鉴权         |
-| ------------------- | ----------- | ------------ |
-| `IAdminRouterBase`  | `/admin/*`  | 需平台 Token |
-| `IGameRouterBase`   | `/game/*`   | 需玩家 Token |
-| `ICommonRouterBase` | `/common/*` | 公开         |
+| 接口                | 路径前缀    | 鉴权           |
+| ------------------- | ----------- | -------------- |
+| `IAdminRouterBase`  | `/admin/*`  | 需平台 Token   |
+| `IAppRouterBase`    | `/app/*`    | 需客户端 Token |
+| `ICommonRouterBase` | `/common/*` | 公开           |
 
 ```csharp
 public class SysUserRouter : IAdminRouterBase
@@ -165,13 +165,13 @@ INSERT INTO sys_menu (id, parent_id, name, code, path, component, icon, sort, is
 
 ```bash
 # 后端启动 (端口 5055，Swagger: /swagger)
-cd server/src/SeaCode.Api && ASPNETCORE_ENVIRONMENT=Development dotnet run
+cd server/src/Art.Api && ASPNETCORE_ENVIRONMENT=Development dotnet run
 
 # 前端启动
 cd web && pnpm dev
 
 # 数据库执行 SQL
-mysql -h localhost -P 3306 -u root -p aaaaaa sea < script.sql
+mysql -h localhost -P 3306 -u root -p aaaaaa art < script.sql
 ```
 
 ---
